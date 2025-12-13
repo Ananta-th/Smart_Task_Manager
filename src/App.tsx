@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { HomePage } from './components/HomePage';
-import { TaskPage } from './pages/TaskPage';
+import TaskPage from './pages/TaskPage';
 import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
-import { Dashboard } from './components/Dashboard';
+import Dashboard from './components/Dashboard';
 import { ProfilePage } from './components/ProfilePage';
-import { KanbanBoard } from './components/KanbanBoard';
+import KanbanBoard from './components/KanbanBoard';
 import { MainLayout } from './components/MainLayout';
 
 export default function App() {
@@ -60,5 +60,5 @@ export default function App() {
     );
   }
 
-  return <TaskPage onHomeClick={() => setCurrentView('home')} />;
+  return <TaskPage />;
 }

@@ -1,192 +1,143 @@
 import React, { useState } from 'react';
-import '../styles/Dashboard.css';
-import {
-  Calendar,
-  Settings,
-  Home,
-  LogOut,
-  Menu,
-  X,
-  Search,
-  Bell,
-  User
-} from 'lucide-react';
+import '../styles/DashboardNew.css';
 
-interface DashboardProps {
-  onLogout?: () => void;
-  onOpenProfile?: () => void;
-  onOpenKanban?: () => void;
-}
-
-export function Dashboard({ onLogout, onOpenProfile, onOpenKanban }: DashboardProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [activeRange, setActiveRange] = useState<'daily' | 'weekly' | 'monthly'>('monthly');
-
+const Dashboard = () => {
+  const [activeFilter, setActiveFilter] = useState('Daily');
+  
   return (
-    <div className="dashboard-container">
-      {/* Sidebar */}
-      <aside className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
-        <div className="sidebar-header">
-          <div className="logo">
-            <Calendar className="logo-icon" />
-            <span className="logo-text">EventHub</span>
+    <div className="app-container">
+      <div className="dashboard">
+        {/* Header with Search */}
+        <div className="header-section">
+        <div className="search-container">
+          <input 
+            type="text" 
+            className="search-input" 
+            placeholder="Search anything..."
+          />
+        </div>
+        <h2 className="search-title">Search Tasks</h2>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="stats-grid">
+        {/* Task Completed Card */}
+        <div className="stat-card">
+          <div className="stat-main">
+            <div className="stat-label">Task Completed</div>
+            <div className="stat-value">08</div>
           </div>
-          <button 
-            className="sidebar-toggle"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          <div className="stat-footer">
+            <span className="trend-up">10+</span> more
+            <div className="trend-text">from last week</div>
+          </div>
         </div>
 
-        <nav className="sidebar-nav">
-          <ul className="nav-list">
-            <li className="nav-item active">
-              <Home className="nav-icon" />
-              <span className="nav-text">Dashboard</span>
-            </li>
-            <li className="nav-item" onClick={onOpenKanban}>
-              <Calendar className="nav-icon" />
-              <span className="nav-text">My Events</span>
-            </li>
-            <li className="nav-item">
-              <User className="nav-icon" />
-              <span className="nav-text">Attendees</span>
-            </li>
-            <li className="nav-item">
-              <Settings className="nav-icon" />
-              <span className="nav-text">Settings</span>
-            </li>
-          </ul>
-        </nav>
-
-        <div className="sidebar-footer">
-          <button className="logout-btn" onClick={onLogout}>
-            <LogOut className="logout-icon" />
-            <span className="logout-text">Logout</span>
-          </button>
+        {/* New Task Card */}
+        <div className="stat-card">
+          <div className="stat-main">
+            <div className="stat-label">New Task</div>
+            <div className="stat-value">10</div>
+          </div>
+          <div className="stat-footer">
+            <span className="trend-up">10+</span> more
+            <div className="trend-text">from last week</div>
+          </div>
         </div>
-      </aside>
 
-      {/* Main Content */}
-      <main className="main-content">
-        <header className="header dashboard-header">
-          <div className="header-search-wrapper">
-            <button className="header-menu-btn">
-              <Menu size={20} />
-            </button>
-            <div className="header-search-input">
-              <Search className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search Tasks"
-                className="search-input wide"
-              />
-            </div>
-            <button className="header-filter-btn">
-              <Calendar size={20} />
-            </button>
+        {/* Project Done Card */}
+        <div className="stat-card">
+          <div className="stat-main">
+            <div className="stat-label">Project Done</div>
+            <div className="stat-value">10</div>
           </div>
-          <div className="header-right">
-            <div className="header-top-search">
-              <Search className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search anything..."
-                className="search-input"
-              />
-            </div>
-            <button className="notification-btn">
-              <Bell size={20} />
-            </button>
-            <div
-              className="user-profile"
-              onClick={onOpenProfile}
-              style={{ cursor: 'pointer' }}
-            >
-              <User size={20} />
-            </div>
+          <div className="stat-footer">
+            <span className="trend-up">08+</span> more
+            <div className="trend-text">from last week</div>
           </div>
-        </header>
+        </div>
+      </div>
 
-        <section className="stats-row">
-          <div className="stat-card">
-            <div className="stat-header">
-              <span className="stat-label">Task Completed</span>
-              <span className="stat-value">08</span>
-            </div>
-            <div className="stat-mini-chart stat-mini-chart--purple" />
-            <p className="stat-footnote"><span className="stat-positive">10+ more</span> from last week</p>
-          </div>
-          <div className="stat-card">
-            <div className="stat-header">
-              <span className="stat-label">New Task</span>
-              <span className="stat-value">10</span>
-            </div>
-            <div className="stat-mini-chart stat-mini-chart--blue" />
-            <p className="stat-footnote"><span className="stat-positive">10+ more</span> from last week</p>
-          </div>
-          <div className="stat-card">
-            <div className="stat-header">
-              <span className="stat-label">Project Done</span>
-              <span className="stat-value">10</span>
-            </div>
-            <div className="stat-mini-chart stat-mini-chart--red" />
-            <p className="stat-footnote"><span className="stat-positive">08+ more</span> from last week</p>
-          </div>
-        </section>
-
-        <section className="task-chart-section">
-          <div className="task-chart-header">
-            <h2>Task Done</h2>
-            <div className="task-chart-tabs">
+      {/* Chart Section */}
+      <div className="chart-section">
+        <div className="chart-header">
+          <h3 className="chart-title">Task Done</h3>
+          <div className="filter-tabs">
+            {['Daily', 'Weekly', 'Monthly'].map((tab) => (
               <button
-                className={`task-chart-tab ${activeRange === 'daily' ? 'active' : ''}`}
-                onClick={() => setActiveRange('daily')}
+                key={tab}
+                className={`filter-tab ${activeFilter === tab ? 'active' : ''}`}
+                onClick={() => setActiveFilter(tab)}
               >
-                Daily
+                {tab}
               </button>
-              <button
-                className={`task-chart-tab ${activeRange === 'weekly' ? 'active' : ''}`}
-                onClick={() => setActiveRange('weekly')}
-              >
-                Weekly
-              </button>
-              <button
-                className={`task-chart-tab ${activeRange === 'monthly' ? 'active' : ''}`}
-                onClick={() => setActiveRange('monthly')}
-              >
-                Monthly
-              </button>
-            </div>
+            ))}
           </div>
+        </div>
 
-          <div className="task-chart">
-            <div className="task-chart-grid">
-              <div className="task-chart-grid-line" />
-              <div className="task-chart-grid-line" />
-              <div className="task-chart-grid-line" />
-              <div className="task-chart-grid-line" />
+        {/* Chart Area */}
+        <div className="chart-container">
+          {/* Month labels at bottom */}
+          <div className="month-labels">
+            {['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'].map((month) => (
+              <div key={month} className="month-label">{month}</div>
+            ))}
+          </div>
+          
+          {/* Chart Bars */}
+          <div className="chart-bars">
+            {/* These would represent data points - creating sample bars */}
+            <div className="bar-group">
+              <div className="bar bar-1" style={{ height: '75%' }}></div>
             </div>
-            <div className="task-chart-area task-chart-area--primary" />
-            <div className="task-chart-line task-chart-line--accent" />
-            <div className="task-chart-xaxis">
-              <span>May</span>
-              <span>Jun</span>
-              <span>Jul</span>
-              <span>Aug</span>
-              <span>Sep</span>
-              <span>Oct</span>
-              <span>Nov</span>
-              <span>Dec</span>
-              <span>Jan</span>
-              <span>Feb</span>
-              <span>Mar</span>
-              <span>Apr</span>
+            <div className="bar-group">
+              <div className="bar bar-2" style={{ height: '40%' }}></div>
+            </div>
+            <div className="bar-group">
+              <div className="bar bar-1" style={{ height: '90%' }}></div>
+            </div>
+            <div className="bar-group">
+              <div className="bar bar-2" style={{ height: '60%' }}></div>
+            </div>
+            <div className="bar-group">
+              <div className="bar bar-1" style={{ height: '85%' }}></div>
+            </div>
+            <div className="bar-group">
+              <div className="bar bar-2" style={{ height: '50%' }}></div>
+            </div>
+            <div className="bar-group">
+              <div className="bar bar-1" style={{ height: '95%' }}></div>
+            </div>
+            <div className="bar-group">
+              <div className="bar bar-2" style={{ height: '70%' }}></div>
+            </div>
+            <div className="bar-group">
+              <div className="bar bar-1" style={{ height: '80%' }}></div>
+            </div>
+            <div className="bar-group">
+              <div className="bar bar-2" style={{ height: '45%' }}></div>
+            </div>
+            <div className="bar-group">
+              <div className="bar bar-1" style={{ height: '65%' }}></div>
+            </div>
+            <div className="bar-group">
+              <div className="bar bar-2" style={{ height: '85%' }}></div>
             </div>
           </div>
-        </section>
-      </main>
+          
+          {/* Y-axis labels */}
+          <div className="y-axis">
+            <div className="y-label">100</div>
+            <div className="y-label">75</div>
+            <div className="y-label">50</div>
+            <div className="y-label">25</div>
+            <div className="y-label">0</div>
+          </div>
+        </div>
+      </div>
+      </div>
     </div>
   );
-}
+};
+
+export default Dashboard;
