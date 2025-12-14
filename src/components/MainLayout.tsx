@@ -1,10 +1,10 @@
 import React from 'react';
-import '../styles/Dashboard.css';
-import { LayoutDashboard, ListChecks, User, Clock, LogOut } from 'lucide-react';
+import '../styles/DashboardCombined.css';
+import { LayoutDashboard, ListChecks, User, Clock, MessageSquare, LogOut } from 'lucide-react';
 
 interface MainLayoutProps {
-  currentView: 'dashboard' | 'kanban' | 'profile' | 'timeline';
-  onNavigate: (view: 'dashboard' | 'kanban' | 'profile' | 'timeline') => void;
+  currentView: 'dashboard' | 'kanban' | 'profile' | 'timeline' | 'messages';
+  onNavigate: (view: 'dashboard' | 'kanban' | 'profile' | 'timeline' | 'messages') => void;
   children: React.ReactNode;
 }
 
@@ -37,14 +37,25 @@ export function MainLayout({ currentView, onNavigate, children }: MainLayoutProp
           >
             <Clock size={22} />
           </button>
+
+          <button
+            className={`shell-nav-icon ${currentView === 'messages' ? 'active' : ''}`}
+            onClick={() => onNavigate('messages')}
+            title="Messages"
+          >
+            <MessageSquare size={22} />
+          </button>
           
           <div className="mt-auto">
             <button
               className="shell-nav-icon text-red-500 hover:bg-red-50"
               onClick={() => {
-                // Add your logout logic here
-                console.log('Logging out...');
-                // Example: window.location.href = '/login';
+                // Clear user session data
+                localStorage.removeItem('userToken');
+                localStorage.removeItem('userData');
+                
+                // Redirect to login page
+                window.location.href = '/login';
               }}
               title="Logout"
             >
@@ -54,8 +65,8 @@ export function MainLayout({ currentView, onNavigate, children }: MainLayoutProp
         </div>
       </aside>
 
-      <div className="shell-main">
-        <main className="shell-content">{children}</main>
+      <div className={`shell-main ${currentView === 'timeline' ? 'timeline-main' : ''}`}>
+        <main className={`shell-content ${currentView === 'timeline' ? 'timeline-view' : ''}`}>{children}</main>
       </div>
     </div>
   );

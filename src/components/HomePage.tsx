@@ -54,13 +54,15 @@ export function HomePage({ onGetStarted, onLoginClick, onSignupClick }: HomePage
       <div className="content-wrapper">
         {/* Top Navigation Bar */}
         <div className="navbar">
-          <div className="brand">
-            <CheckSquare className="text-gray-700 h-6 w-6" />
-            <span className="brand-text">ProjectFlow</span>
-          </div>
-          <div className="nav-buttons">
-            <Button variant="ghost" className="btn btn-ghost" onClick={onLoginClick}>Log In</Button>
-            <Button className="btn btn-dark" onClick={onSignupClick}>Sign Up</Button>
+          <div className="navbar-inner">
+            <div className="brand">
+              <CheckSquare className="text-gray-700 h-6 w-6" />
+              <span className="brand-text">ProjectFlow</span>
+            </div>
+            <div className="nav-buttons">
+              <Button variant="ghost" className="btn btn-ghost" onClick={onLoginClick}>Log In</Button>
+              <Button className="btn btn-dark" onClick={onSignupClick}>Sign Up</Button>
+            </div>
           </div>
         </div>
 

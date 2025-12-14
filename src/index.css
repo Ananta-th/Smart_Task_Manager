@@ -396,6 +396,11 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
   }
 
   :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) h1 {
@@ -2399,6 +2404,8 @@
 :root {
   --font-size: 16px;
   --background: #fff;
+  margin: 0;
+  padding: 0;
   --foreground: oklch(.145 0 0);
   --card: #fff;
   --card-foreground: oklch(.145 0 0);

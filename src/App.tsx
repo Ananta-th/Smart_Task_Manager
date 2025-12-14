@@ -6,59 +6,83 @@ import { SignupPage } from './pages/SignupPage';
 import Dashboard from './components/Dashboard';
 import { ProfilePage } from './components/ProfilePage';
 import KanbanBoard from './components/KanbanBoard';
+import Timeline from './components/Timeline';
+import { MessagesPage } from './pages/MessagesPage';
 import { MainLayout } from './components/MainLayout';
+import { ThemeProvider } from './contexts/ThemeContext';
+
+type View = 'home' | 'login' | 'signup' | 'dashboard' | 'profile' | 'kanban' | 'timeline' | 'messages';
+type MainView = 'dashboard' | 'profile' | 'kanban' | 'timeline' | 'messages';
+
+const isMainView = (view: View): view is MainView => {
+  return (['dashboard', 'profile', 'kanban', 'timeline', 'messages'] as const).includes(view as MainView);
+};
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'tasks' | 'login' | 'signup' | 'dashboard' | 'profile' | 'kanban' | 'timeline'>('home');
+  const [currentView, setCurrentView] = useState<View>('home');
 
   if (currentView === 'home') {
     return (
-      <HomePage
-        onGetStarted={() => setCurrentView('dashboard')}
-        onLoginClick={() => setCurrentView('login')}
-        onSignupClick={() => setCurrentView('signup')}
-      />
+      <ThemeProvider>
+        <HomePage
+          onGetStarted={() => setCurrentView('dashboard')}
+          onLoginClick={() => setCurrentView('login')}
+          onSignupClick={() => setCurrentView('signup')}
+        />
+      </ThemeProvider>
     );
   }
 
   if (currentView === 'login') {
     return (
-      <LoginPage
-        onBackToHome={() => setCurrentView('home')}
-        onSignupClick={() => setCurrentView('signup')}
-        onLoginSuccess={() => setCurrentView('dashboard')}
-      />
+      <ThemeProvider>
+        <LoginPage
+          onBackToHome={() => setCurrentView('home')}
+          onSignupClick={() => setCurrentView('signup')}
+          onLoginSuccess={() => setCurrentView('dashboard')}
+        />
+      </ThemeProvider>
     );
   }
 
   if (currentView === 'signup') {
     return (
-      <SignupPage
-        onBackToHome={() => setCurrentView('home')}
-        onLoginClick={() => setCurrentView('login')}
-        onSignupSuccess={() => setCurrentView('dashboard')}
-      />
+      <ThemeProvider>
+        <SignupPage
+          onBackToHome={() => setCurrentView('home')}
+          onLoginClick={() => setCurrentView('login')}
+          onSignupSuccess={() => setCurrentView('dashboard')}
+        />
+      </ThemeProvider>
     );
   }
 
-  if (['dashboard', 'profile', 'kanban', 'timeline'].includes(currentView)) {
+  if (isMainView(currentView)) {
     return (
-      <MainLayout
-        currentView={currentView === 'dashboard' ? 'dashboard' : currentView === 'profile' ? 'profile' : 'kanban'}
-        onNavigate={(view) => setCurrentView(view)}
-      >
-        {currentView === 'dashboard' && (
-          <Dashboard
-            onLogout={() => setCurrentView('home')}
-            onOpenProfile={() => setCurrentView('profile')}
-            onOpenKanban={() => setCurrentView('kanban')}
-          />
-        )}
-        {currentView === 'profile' && <ProfilePage />}
-        {currentView === 'kanban' && <KanbanBoard />}
-      </MainLayout>
+      <ThemeProvider>
+        <MainLayout
+          currentView={currentView}
+          onNavigate={(view) => setCurrentView(view)}
+        >
+          {currentView === 'dashboard' && (
+            <Dashboard
+              onLogout={() => setCurrentView('home')}
+              onOpenProfile={() => setCurrentView('profile')}
+              onOpenKanban={() => setCurrentView('kanban')}
+            />
+          )}
+          {currentView === 'profile' && <ProfilePage />}
+          {currentView === 'kanban' && <KanbanBoard />}
+          {currentView === 'timeline' && <Timeline />}
+          {currentView === 'messages' && <MessagesPage />}
+        </MainLayout>
+      </ThemeProvider>
     );
   }
 
-  return <TaskPage />;
+  return (
+    <ThemeProvider>
+      <TaskPage />
+    </ThemeProvider>
+  );
 }

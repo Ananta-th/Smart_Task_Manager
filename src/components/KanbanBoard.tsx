@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
-import './KanbanBoard.css';
+import '../styles/KanbanBoard.css';
+import { Flame, MoreHorizontal, Plus, MessageCircle, Paperclip, CheckCircle2 } from 'lucide-react';
 
 // Type definitions
 interface Task {
@@ -23,6 +24,22 @@ interface Column {
 interface Columns {
   [key: string]: Column;
 }
+
+const getTagKey = (columnTitle: string) => {
+  const t = columnTitle.toLowerCase();
+  if (t.includes('backlog')) return 'design';
+  if (t.includes('to do') || t.includes('todo')) return 'research';
+  if (t.includes('in progress')) return 'planning';
+  return 'content';
+};
+
+const getCoverSeed = (title: string) => {
+  const lower = title.toLowerCase();
+  if (lower.includes('design')) return 1050;
+  if (lower.includes('copy') || lower.includes('content')) return 1060;
+  if (lower.includes('research')) return 1040;
+  return 1030;
+};
 
 // Initial data matching the image
 const initialColumns: Columns = {
@@ -66,11 +83,12 @@ const initialColumns: Columns = {
             date: 'Nov 20, 2025',
             progress: '0/8',
             comments: '4 Comment',
-            day: '11th'
+            day: '11th',
+            type: 'task'
           }
         ]
       },
-      { id: 'divider1', type: 'divider' }
+      { id: 'divider1', title: 'divider', type: 'divider' }
     ]
   },
   todo: {
@@ -86,7 +104,8 @@ const initialColumns: Columns = {
             id: 't1-1',
             title: 'auditing information architecture',
             date: 'Nov 20, 2025',
-            progress: '0/8'
+            progress: '0/8',
+            type: 'task'
           }
         ]
       },
@@ -120,7 +139,8 @@ const initialColumns: Columns = {
             title: 'Listing deliverables checklist',
             date: 'Nov 20, 2025',
             comments: '4 Comment',
-            day: '11th'
+            day: '11th',
+            type: 'task'
           }
         ]
       },
@@ -133,7 +153,8 @@ const initialColumns: Columns = {
             id: 'i2-1',
             title: 'Qualitative research planning',
             date: 'Nov 20, 2025',
-            progress: '0/8'
+            progress: '0/8',
+            type: 'task'
           }
         ]
       },
@@ -146,7 +167,8 @@ const initialColumns: Columns = {
             id: 'i3-1',
             title: 'Copywriting Content',
             date: 'Nov 20, 2025',
-            progress: '0/8'
+            progress: '0/8',
+            type: 'task'
           }
         ]
       },
@@ -181,7 +203,8 @@ const initialColumns: Columns = {
             id: 'i5-1',
             title: 'High fidelity UI Desktop',
             date: 'Nov 20, 2025',
-            progress: '0/8'
+            progress: '0/8',
+            type: 'task'
           }
         ]
       },
@@ -195,7 +218,8 @@ const initialColumns: Columns = {
             title: 'Listing deliverables checklist',
             date: 'Nov 20, 2025',
             comments: '4 Comment',
-            day: '11th'
+            day: '11th',
+            type: 'task'
           }
         ]
       }
@@ -332,20 +356,7 @@ const KanbanBoard: React.FC = () => {
 
     if (task.type === 'category') {
       return (
-        <div className="task-group">
-          <h3 className="task-category">
-            {task.title.includes(' ') ? (
-              <>
-                {task.title.split(' ')[0]}
-                <span className="task-subcategory">
-                  {task.title.split(' ').slice(1).join(' ')}
-                </span>
-              </>
-            ) : (
-              task.title
-            )}
-          </h3>
-          
+        <div className="kb-section">
           <div className="task-list">
             {task.children?.map((child, childIndex) => (
               <Draggable
@@ -358,52 +369,43 @@ const KanbanBoard: React.FC = () => {
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
-                    className={`task-item ${snapshot.isDragging ? 'dragging' : ''}`}
+                    className={`task-item kb-card ${snapshot.isDragging ? 'dragging' : ''}`}
                   >
-                    <div className="task-header">
-                      <div className="task-title">{child.title}</div>
-                      <button 
-                        className="remove-btn"
-                        onClick={() => handleRemoveTask(columnId, child.id)}
-                      >
-                        ×
+                    <div className="kb-card-top">
+                      <span className={`kb-tag kb-tag-${getTagKey(columns[columnId].title)}`}>{getTagKey(columns[columnId].title)}</span>
+                      <button className="kb-icon-btn" type="button" aria-label="More">
+                        <MoreHorizontal size={16} />
                       </button>
                     </div>
-                    
-                    {(child.date || child.progress || child.comments || child.day) && (
-                      <div className="task-meta">
-                        {child.date && (
-                          <span className="task-date">{child.date}</span>
-                        )}
-                        {child.progress && (
-                          <span className="task-progress">{child.progress}</span>
-                        )}
-                        {child.comments && (
-                          <span className="task-comments">{child.comments}</span>
-                        )}
-                        {child.day && (
-                          <span className="task-day">{child.day}</span>
-                        )}
+
+                    <div className="kb-card-body">
+                      <div className="kb-card-title">{child.title}</div>
+                      <div className="kb-card-subtitle">Create content for peaceland App</div>
+
+                      {child.date && <div className="kb-date-pill">{child.date}</div>}
+
+                      <div className="kb-card-footer">
+                        <div className="kb-assignees">
+                          <span className="kb-assignee" />
+                          <span className="kb-assignee" />
+                        </div>
+
+                        <div className="kb-meta">
+                          {child.progress && (
+                            <span className="kb-meta-item">
+                              <CheckCircle2 size={14} />
+                              {child.progress}
+                            </span>
+                          )}
+                          {child.comments && (
+                            <span className="kb-meta-item">
+                              <MessageCircle size={14} />
+                              {child.comments}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    )}
-                    
-                    {child.type === 'subcategory' && child.children && (
-                      <div className="subtask-list">
-                        {child.children.map((subchild) => (
-                          <div key={subchild.id} className="subtask-item">
-                            <div className="task-title">{subchild.title}</div>
-                            {subchild.date && (
-                              <div className="task-meta">
-                                <span className="task-date">{subchild.date}</span>
-                                {subchild.progress && (
-                                  <span className="task-progress">{subchild.progress}</span>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    </div>
                   </div>
                 )}
               </Draggable>
@@ -424,34 +426,52 @@ const KanbanBoard: React.FC = () => {
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
-            className={`task-item ${snapshot.isDragging ? 'dragging' : ''}`}
+            className={`task-item kb-card ${snapshot.isDragging ? 'dragging' : ''}`}
           >
-            <div className="task-header">
-              <div className="task-title">{task.title}</div>
-              <button 
-                className="remove-btn"
-                onClick={() => handleRemoveTask(columnId, task.id)}
-              >
-                ×
+            <div className="kb-card-top">
+              <span className={`kb-tag kb-tag-${getTagKey(columns[columnId].title)}`}>{getTagKey(columns[columnId].title)}</span>
+              <button className="kb-icon-btn" type="button" aria-label="More">
+                <MoreHorizontal size={16} />
               </button>
             </div>
-            
-            {(task.date || task.progress || task.comments || task.day) && (
-              <div className="task-meta">
-                {task.date && (
-                  <span className="task-date">{task.date}</span>
-                )}
-                {task.progress && (
-                  <span className="task-progress">{task.progress}</span>
-                )}
-                {task.comments && (
-                  <span className="task-comments">{task.comments}</span>
-                )}
-                {task.day && (
-                  <span className="task-day">{task.day}</span>
-                )}
+
+            <div className="kb-cover" style={{
+              backgroundImage: `url(https://picsum.photos/seed/${getCoverSeed(task.title)}/520/280)`
+            }} />
+
+            <div className="kb-card-body">
+              <div className="kb-card-title">{task.title}</div>
+              <div className="kb-card-subtitle">Create content for peaceland App</div>
+
+              {task.date && <div className="kb-date-pill">{task.date}</div>}
+
+              <div className="kb-card-footer">
+                <div className="kb-assignees">
+                  <span className="kb-assignee" />
+                  <span className="kb-assignee" />
+                  <span className="kb-assignee" />
+                </div>
+
+                <div className="kb-meta">
+                  {task.progress && (
+                    <span className="kb-meta-item">
+                      <CheckCircle2 size={14} />
+                      {task.progress}
+                    </span>
+                  )}
+                  {task.comments && (
+                    <span className="kb-meta-item">
+                      <MessageCircle size={14} />
+                      {task.comments}
+                    </span>
+                  )}
+                  <span className="kb-meta-item">
+                    <Paperclip size={14} />
+                    1 file
+                  </span>
+                </div>
               </div>
-            )}
+            </div>
           </div>
         )}
       </Draggable>
@@ -462,27 +482,24 @@ const KanbanBoard: React.FC = () => {
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="kanban-board">
         <div className="kanban-header">
-          <h1 className="kanban-title">Task</h1>
-          
-          <div className="header-controls">
-            <select 
-              className="column-select"
-              value={selectedColumn}
-              onChange={(e) => setSelectedColumn(e.target.value)}
-            >
-              {Object.values(columns).map(column => (
-                <option key={column.id} value={column.id}>
-                  {column.title}
-                </option>
-              ))}
-            </select>
-            
-            <button 
-              className="add-task-btn"
-              onClick={() => setShowAddForm(!showAddForm)}
-            >
-              + Add Task
-            </button>
+          <div className="kb-topbar">
+            <h1 className="kanban-title">
+              <Flame size={20} />
+              Task
+            </h1>
+
+            <div className="kb-topbar-right">
+              <div className="kb-avatars">
+                <span className="kb-avatar" />
+                <span className="kb-avatar" />
+                <span className="kb-avatar" />
+                <span className="kb-avatar" />
+                <span className="kb-avatar kb-avatar-plus">+6</span>
+              </div>
+              <button className="kb-topbar-add" type="button" onClick={() => setShowAddForm(!showAddForm)} aria-label="Add">
+                <Plus size={16} />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -528,9 +545,14 @@ const KanbanBoard: React.FC = () => {
                     >
                       <div className="column-header" {...provided.dragHandleProps}>
                         <h2 className="column-title">{column.title}</h2>
-                        <span className="task-count">
-                          {column.tasks.filter(t => t.type !== 'divider').length}
-                        </span>
+                        <div className="kb-column-actions">
+                          <button className="kb-column-action" type="button" aria-label="More">
+                            <MoreHorizontal size={16} />
+                          </button>
+                          <button className="kb-column-action kb-column-add" type="button" aria-label="Add">
+                            <Plus size={16} />
+                          </button>
+                        </div>
                       </div>
                       
                       <Droppable droppableId={column.id} type="task">
